@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field
 
 
 class ReadyEvent(BaseModel):
-    claim_id: str
+    claim_id: str | None = None
+    blob_path: str | None = None
     trigger: Literal['ready'] = 'ready'
     correlation_id: str
 

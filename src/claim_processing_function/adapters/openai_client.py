@@ -31,7 +31,11 @@ class AzureOpenAIAdapter:
         }
         response = requests.post(url, json=body, headers={'Authorization': f'Bearer {token}'}, timeout=60)
         response.raise_for_status()
-        return json.loads(response.json()['choices'][0]['message']['content'])
+        content_json = response.json()['choices'][0]['message']['content']
+        try:
+            return json.loads(content_json)
+        except Exception as exc:
+            raise ValueError(f"Model response is not valid JSON: {content_json}") from exc
 
     def segment(self, text: str, prompt: str) -> dict[str, Any]:
         return self._chat(self._settings.profile.segment_model, prompt, text)

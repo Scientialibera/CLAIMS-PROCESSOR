@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "berkley-claims-intelligence"
+name = "claims-processor"
 version = "0.1.0"
-description = "Berkley claims document intelligence pipeline"
+description = "General claims document intelligence pipeline"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

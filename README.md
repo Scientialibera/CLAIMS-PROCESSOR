@@ -1,4 +1,4 @@
-# Berkley Claims Intelligence
+# Claims Processor
 
 Enterprise-grade repository scaffold for the Azure-based claims document intelligence solution.
 
@@ -10,6 +10,13 @@ Enterprise-grade repository scaffold for the Azure-based claims document intelli
   - Canonical metadata and ledger to Cosmos DB
   - Retrieval payloads and chunks to Azure AI Search
 - `ClaimUpdate` function supports direct update workflows.
+
+## Implemented Modules
+- Blob reconciliation adapter with per-claim listing and `_READY.json` ignore logic.
+- Cosmos adapter with processing ledger idempotency and records persistence.
+- AI Search adapter for chunk upload.
+- Segmentation, classification, and extraction pipeline stages with schema and prompt control.
+- Claim update path for patching persisted records.
 
 ## Project Layout
 - `src/claim_intake_function`: intake trigger and queue orchestration
