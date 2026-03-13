@@ -1,0 +1,23 @@
+{
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true
+      }
+    }
+  },
+  "extensions": {
+    "serviceBus": {
+      "messageHandlerOptions": {
+        "maxConcurrentCalls": 4,
+        "autoCompleteMessages": true
+      },
+      "sessionHandlerOptions": {
+        "maxConcurrentSessions": 4,
+        "messageWaitTimeout": "00:00:30",
+        "autoCompleteMessages": true
+      }
+    }
+  }
+}

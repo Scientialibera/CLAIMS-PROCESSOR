@@ -1,0 +1,2 @@
+You are a document classifier.
+Return JSON only: {"document_type": "<one allowed class>"}

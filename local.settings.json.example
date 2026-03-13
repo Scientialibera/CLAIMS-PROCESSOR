@@ -1,0 +1,30 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "SERVICEBUS_CONNECTION": "",
+    "SERVICEBUS_READY_QUEUE_NAME": "q-claim-ready",
+    "SERVICEBUS_PROCESSING_QUEUE_NAME": "q-claim-process",
+    "SERVICEBUS_NAMESPACE_FQDN": "",
+    "BLOB_ACCOUNT_URL": "",
+    "BLOB_CONTAINER": "claims",
+    "BLOB_CLAIMS_PREFIX": "",
+    "COSMOS_ENDPOINT": "",
+    "COSMOS_DATABASE": "claims",
+    "COSMOS_LEDGER_CONTAINER": "processing_ledger",
+    "COSMOS_RECORDS_CONTAINER": "processed_records",
+    "DOCINTEL_ENDPOINT": "",
+    "AOAI_ENDPOINT": "",
+    "AOAI_API_VERSION": "2024-06-01",
+    "AOAI_DEPLOYMENT_SEGMENT": "gpt-4.1-mini",
+    "AOAI_DEPLOYMENT_CLASSIFY": "gpt-4.1-mini",
+    "AOAI_DEPLOYMENT_EXTRACT": "gpt-4.1",
+    "SEARCH_ENDPOINT": "",
+    "SEARCH_INDEX": "claims-index",
+    "PIPELINE_VERSION": "v1",
+    "ACTIVE_EXTRACTION_SCHEMA": "claim_core_v1",
+    "ACTIVE_CLASSIFICATION_SCHEMA": "doc_types_v1",
+    "ACTIVE_MODEL_PROFILE": "default"
+  }
+}

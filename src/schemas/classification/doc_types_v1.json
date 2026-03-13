@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "classes": [
+    "loss_notice",
+    "invoice",
+    "medical_record",
+    "attorney_letter",
+    "other"
+  ]
+}

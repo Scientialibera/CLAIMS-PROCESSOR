@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "required_fields": [
+    "claim_number",
+    "policy_number",
+    "loss_date"
+  ],
+  "fields": {
+    "claim_number": {"type": "string"},
+    "policy_number": {"type": "string"},
+    "loss_date": {"type": "date"},
+    "claimant_name": {"type": "string"},
+    "invoice_amount": {"type": "number"}
+  }
+}
