@@ -21,12 +21,16 @@ class BlobStorageAdapter:
 
     def list_claim_documents(self, claim_id: str, prefix: str = "") -> list[BlobDocument]:
         claim_prefix = f"{prefix}{claim_id}/" if prefix else f"{claim_id}/"
+        allowed_ext = {".pdf", ".jpg", ".jpeg", ".tiff", ".tif", ".png"}
         docs: list[BlobDocument] = []
         for item in self._container.list_blobs(name_starts_with=claim_prefix):
             name = item.name
             if name.endswith("/_READY.json") or name.endswith("_READY.json"):
                 continue
             if name.endswith("/"):
+                continue
+            lower_name = name.lower()
+            if not any(lower_name.endswith(ext) for ext in allowed_ext):
                 continue
             docs.append(
                 BlobDocument(

@@ -25,6 +25,10 @@
     "PIPELINE_VERSION": "v1",
     "ACTIVE_EXTRACTION_SCHEMA": "claim_core_v1",
     "ACTIVE_CLASSIFICATION_SCHEMA": "doc_types_v1",
+    "ACTIVE_SEGMENTATION_FUNCTION": "segment_docs_v1",
+    "ACTIVE_EXTRACTION_FUNCTION": "extract_fields_v1",
+    "ACTIVE_CLASSIFICATION_FUNCTION": "classify_doc_v1",
+    "MAX_INDEX_CHUNK_TOKENS": "1200",
     "ACTIVE_MODEL_PROFILE": "default"
   }
 }

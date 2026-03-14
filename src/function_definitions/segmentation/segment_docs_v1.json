@@ -1,0 +1,24 @@
+{
+  "name": "segment_documents",
+  "description": "Return logical documents and the source page indexes",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "documents": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "doc_name": {"type": "string"},
+            "page_index": {
+              "type": "array",
+              "items": {"type": "integer"}
+            }
+          },
+          "required": ["doc_name", "page_index"]
+        }
+      }
+    },
+    "required": ["documents"]
+  }
+}

@@ -40,9 +40,14 @@ class AppSettings:
     profile: ModelProfile
     extraction_schema: dict[str, Any]
     classification_schema: dict[str, Any]
+    segmentation_fn: dict[str, Any]
+    extraction_fn: dict[str, Any]
+    classification_fn: dict[str, Any]
     segment_prompt: str
     classify_prompt: str
     extract_prompt: str
+    photo_summary_prompt: str
+    max_index_chunk_tokens: int
 
 
 def _repo_root() -> Path:
@@ -79,6 +84,9 @@ def get_settings() -> AppSettings:
     profile_name = os.getenv('ACTIVE_MODEL_PROFILE', 'default')
     extraction_name = os.getenv('ACTIVE_EXTRACTION_SCHEMA', 'claim_core_v1')
     classification_name = os.getenv('ACTIVE_CLASSIFICATION_SCHEMA', 'doc_types_v1')
+    segmentation_fn_name = os.getenv('ACTIVE_SEGMENTATION_FUNCTION', 'segment_docs_v1')
+    extraction_fn_name = os.getenv('ACTIVE_EXTRACTION_FUNCTION', 'extract_fields_v1')
+    classification_fn_name = os.getenv('ACTIVE_CLASSIFICATION_FUNCTION', 'classify_doc_v1')
 
     return AppSettings(
         ready_queue_name=os.getenv('SERVICEBUS_READY_QUEUE_NAME', 'q-claim-ready'),
@@ -100,7 +108,12 @@ def get_settings() -> AppSettings:
         profile=_load_profile(profile_name),
         extraction_schema=_load_json(_repo_root() / 'src' / 'schemas' / 'extraction' / f'{extraction_name}.json'),
         classification_schema=_load_json(_repo_root() / 'src' / 'schemas' / 'classification' / f'{classification_name}.json'),
+        segmentation_fn=_load_json(_repo_root() / 'src' / 'function_definitions' / 'segmentation' / f'{segmentation_fn_name}.json'),
+        extraction_fn=_load_json(_repo_root() / 'src' / 'function_definitions' / 'extraction' / f'{extraction_fn_name}.json'),
+        classification_fn=_load_json(_repo_root() / 'src' / 'function_definitions' / 'classification' / f'{classification_fn_name}.json'),
         segment_prompt=_read_text(_repo_root() / 'src' / 'prompts' / 'segmentation' / 'segment_v1.txt'),
         classify_prompt=_read_text(_repo_root() / 'src' / 'prompts' / 'classification' / 'classify_v1.txt'),
         extract_prompt=_read_text(_repo_root() / 'src' / 'prompts' / 'extraction' / 'extract_v1.txt'),
+        photo_summary_prompt=_read_text(_repo_root() / 'src' / 'prompts' / 'extraction' / 'photo_summary_v1.txt'),
+        max_index_chunk_tokens=int(os.getenv('MAX_INDEX_CHUNK_TOKENS', '1200')),
     )

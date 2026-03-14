@@ -1,0 +1,16 @@
+{
+  "name": "classify_document",
+  "description": "Classify document category and target database",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "document_type": {"type": "string"},
+      "database": {
+        "type": "string",
+        "enum": ["cosmos", "index"]
+      },
+      "reason": {"type": "string"}
+    },
+    "required": ["document_type", "database"]
+  }
+}

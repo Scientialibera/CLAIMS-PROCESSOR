@@ -1,10 +1,14 @@
 {
   "version": "v1",
   "classes": [
-    "loss_notice",
-    "invoice",
-    "medical_record",
-    "attorney_letter",
-    "other"
+    {"name": "loss_notice", "default_database": "index"},
+    {"name": "invoice", "default_database": "cosmos"},
+    {"name": "medical_exam", "default_database": "cosmos"},
+    {"name": "medical_record", "default_database": "index"},
+    {"name": "receipt", "default_database": "cosmos"},
+    {"name": "attorney_letter", "default_database": "index"},
+    {"name": "claim_report", "default_database": "index"},
+    {"name": "photo", "default_database": "cosmos"},
+    {"name": "other", "default_database": "cosmos"}
   ]
 }

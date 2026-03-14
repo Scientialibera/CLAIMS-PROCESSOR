@@ -7,14 +7,28 @@ from src.claim_processing_function.adapters.cosmos_client import CosmosAdapter
 from src.claim_processing_function.adapters.search_client import SearchAdapter
 
 
-def _chunk_text(text: str, max_chars: int = 1800) -> list[str]:
-    if not text:
-        return []
+def _estimate_tokens(text: str) -> int:
+    return max(1, len(text) // 4)
+
+
+def _chunk_pages_without_splitting(page_texts: list[str], max_tokens: int) -> list[str]:
     chunks: list[str] = []
-    start = 0
-    while start < len(text):
-        chunks.append(text[start : start + max_chars])
-        start += max_chars
+    current_pages: list[str] = []
+    current_tokens = 0
+
+    for page_text in page_texts:
+        page_tokens = _estimate_tokens(page_text)
+        if current_pages and current_tokens + page_tokens > max_tokens:
+            chunks.append("\n\n".join(current_pages))
+            current_pages = [page_text]
+            current_tokens = page_tokens
+        else:
+            current_pages.append(page_text)
+            current_tokens += page_tokens
+
+    if current_pages:
+        chunks.append("\n\n".join(current_pages))
+
     return chunks
 
 
@@ -22,7 +36,7 @@ def persist_outputs(
     claim_id: str,
     blob_path: str,
     etag: str,
-    processed: list[dict],
+    processed_docs: list[dict],
     settings,
     *,
     status: str = "processed",
@@ -38,11 +52,13 @@ def persist_outputs(
     now = datetime.now(UTC).isoformat()
     search_docs: list[dict] = []
 
-    for idx, item in enumerate(processed):
+    for idx, item in enumerate(processed_docs):
         record_id = f"{claim_id}:{etag}:{idx}:{uuid4().hex[:8]}"
-        segment_text = str(item.get("segment", ""))
+        segment_text = str(item.get("full_text", ""))
         fields = item.get("fields", {})
         doc_type = item.get("document_type", "unknown")
+        db_target = item.get("database", "cosmos")
+        page_texts = item.get("page_texts", [])
 
         record = {
             "id": record_id,
@@ -50,8 +66,10 @@ def persist_outputs(
             "blob_path": blob_path,
             "etag": etag,
             "document_type": doc_type,
+            "database_target": db_target,
             "content": segment_text,
             "extracted_fields": fields,
+            "document_summary": item.get("summary", ""),
             "status": status,
             "created_at": now,
             "updated_at": now,
@@ -59,19 +77,24 @@ def persist_outputs(
         }
         cosmos.upsert_record(record)
 
-        for cidx, chunk in enumerate(_chunk_text(segment_text)):
-            search_docs.append(
-                {
-                    "id": f"{record_id}:{cidx}",
-                    "claim_id": claim_id,
-                    "document_id": record_id,
-                    "chunk_id": str(cidx),
-                    "document_name": blob_path.split("/")[-1],
-                    "content": chunk,
-                    "document_summary": fields.get("summary", ""),
-                    "created_at": now,
-                }
+        if db_target == "index":
+            chunks = _chunk_pages_without_splitting(
+                page_texts if page_texts else [segment_text],
+                settings.max_index_chunk_tokens,
             )
+            for cidx, chunk in enumerate(chunks):
+                search_docs.append(
+                    {
+                        "id": f"{record_id}:{cidx}",
+                        "claim_id": claim_id,
+                        "document_id": record_id,
+                        "chunk_id": str(cidx),
+                        "document_name": item.get("doc_name", blob_path.split("/")[-1]),
+                        "content": chunk,
+                        "document_summary": item.get("summary", ""),
+                        "created_at": now,
+                    }
+                )
 
     search.upload_documents(search_docs)
     cosmos.upsert_ledger(
@@ -80,5 +103,5 @@ def persist_outputs(
         etag=etag,
         pipeline_version=settings.pipeline_version,
         status=status,
-        metadata={"segment_count": len(processed)},
+        metadata={"doc_count": len(processed_docs), "indexed_chunk_count": len(search_docs)},
     )

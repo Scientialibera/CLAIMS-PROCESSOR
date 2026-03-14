@@ -1,0 +1,2 @@
+You are summarizing a photo or visual evidence snippet.
+Return exactly two short sentences focused on what is visible and why it may matter for a claim.

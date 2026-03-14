@@ -1,0 +1,15 @@
+{
+  "name": "extract_document_fields",
+  "description": "Extract required and optional business fields from a segmented document",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "fields": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "summary": {"type": "string"}
+    },
+    "required": ["fields"]
+  }
+}
