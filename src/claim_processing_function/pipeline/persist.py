@@ -38,6 +38,7 @@ def persist_outputs(
     etag: str,
     processed_docs: list[dict],
     settings,
+    ai_client=None,
     *,
     status: str = "processed",
 ) -> None:
@@ -83,18 +84,19 @@ def persist_outputs(
                 settings.max_index_chunk_tokens,
             )
             for cidx, chunk in enumerate(chunks):
-                search_docs.append(
-                    {
-                        "id": f"{record_id}:{cidx}",
-                        "claim_id": claim_id,
-                        "document_id": record_id,
-                        "chunk_id": str(cidx),
-                        "document_name": item.get("doc_name", blob_path.split("/")[-1]),
-                        "content": chunk,
-                        "document_summary": item.get("summary", ""),
-                        "created_at": now,
-                    }
-                )
+                doc_payload = {
+                    "id": f"{record_id}:{cidx}",
+                    "claim_id": claim_id,
+                    "document_id": record_id,
+                    "chunk_id": str(cidx),
+                    "document_name": item.get("doc_name", blob_path.split("/")[-1]),
+                    "content": chunk,
+                    "document_summary": item.get("summary", ""),
+                    "created_at": now,
+                }
+                if settings.search_use_embeddings and ai_client is not None:
+                    doc_payload["content_vector"] = ai_client.embed(chunk)
+                search_docs.append(doc_payload)
 
     search.upload_documents(search_docs)
     cosmos.upsert_ledger(

@@ -37,6 +37,7 @@ class AppSettings:
     docintel_endpoint: str
     aoai_endpoint: str
     aoai_api_version: str
+    aoai_embedding_deployment: str
     profile: ModelProfile
     extraction_schema: dict[str, Any]
     classification_schema: dict[str, Any]
@@ -48,6 +49,8 @@ class AppSettings:
     extract_prompt: str
     photo_summary_prompt: str
     max_index_chunk_tokens: int
+    search_use_embeddings: bool
+    search_embedding_dimensions: int
 
 
 def _repo_root() -> Path:
@@ -105,6 +108,7 @@ def get_settings() -> AppSettings:
         docintel_endpoint=os.getenv('DOCINTEL_ENDPOINT', ''),
         aoai_endpoint=os.getenv('AOAI_ENDPOINT', ''),
         aoai_api_version=os.getenv('AOAI_API_VERSION', '2024-06-01'),
+        aoai_embedding_deployment=os.getenv('AOAI_DEPLOYMENT_EMBEDDING', 'text-embedding-3-large'),
         profile=_load_profile(profile_name),
         extraction_schema=_load_json(_repo_root() / 'src' / 'schemas' / 'extraction' / f'{extraction_name}.json'),
         classification_schema=_load_json(_repo_root() / 'src' / 'schemas' / 'classification' / f'{classification_name}.json'),
@@ -116,4 +120,6 @@ def get_settings() -> AppSettings:
         extract_prompt=_read_text(_repo_root() / 'src' / 'prompts' / 'extraction' / 'extract_v1.txt'),
         photo_summary_prompt=_read_text(_repo_root() / 'src' / 'prompts' / 'extraction' / 'photo_summary_v1.txt'),
         max_index_chunk_tokens=int(os.getenv('MAX_INDEX_CHUNK_TOKENS', '1200')),
+        search_use_embeddings=os.getenv('SEARCH_USE_EMBEDDINGS', 'true').lower() == 'true',
+        search_embedding_dimensions=int(os.getenv('SEARCH_EMBEDDING_DIMENSIONS', '3072')),
     )

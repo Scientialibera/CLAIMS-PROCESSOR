@@ -124,6 +124,7 @@ def process_claim(message_body: bytes, logger: logging.Logger) -> None:
                 etag=doc.etag,
                 processed_docs=processed_docs,
                 settings=settings,
+                ai_client=ai_client,
                 status="processed",
             )
             processed_count += 1

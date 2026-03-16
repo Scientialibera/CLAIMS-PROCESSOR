@@ -1,0 +1,79 @@
+[azure]
+subscription_id = ""
+location = "eastus2"
+resource_group_name = ""
+
+[naming]
+prefix = "berkleyclaims"
+function_app_name = ""
+storage_account_name = ""
+servicebus_namespace_name = ""
+cosmos_account_name = ""
+search_service_name = ""
+openai_account_name = ""
+docintel_account_name = ""
+
+[queues]
+ready_queue_name = "q-claim-ready"
+processing_queue_name = "q-claim-process"
+
+[storage]
+claims_container_name = "claims"
+prompts_container_name = "prompts"
+function_definitions_container_name = "function-definitions"
+schemas_container_name = "schemas"
+
+[cosmos]
+database_name = "claims"
+ledger_container_name = "processing_ledger"
+records_container_name = "processed_records"
+
+[search]
+index_name = "claims-index"
+deploy_search_service = true
+sku = "basic"
+
+[openai]
+deploy_openai_resources = true
+deployment_segment_name = "gpt-4-1-mini-segment"
+deployment_classify_name = "gpt-4-1-mini-classify"
+deployment_extract_name = "gpt-4-1-extract"
+deployment_embedding_name = "text-embedding-3-large"
+model_segment_name = "gpt-4.1-mini"
+model_classify_name = "gpt-4.1-mini"
+model_extract_name = "gpt-4.1"
+model_embedding_name = "text-embedding-3-large"
+model_segment_version = "2025-04-14"
+model_classify_version = "2025-04-14"
+model_extract_version = "2025-04-14"
+model_embedding_version = "1"
+deployment_sku_name = "GlobalStandard"
+capacity = 50
+api_version = "2024-06-01"
+
+[docintel]
+deploy_docintel_resources = true
+sku_name = "S0"
+
+[app_settings]
+pipeline_version = "v1"
+active_extraction_schema = "claim_core_v1"
+active_classification_schema = "doc_types_v1"
+active_segmentation_function = "segment_docs_v1"
+active_extraction_function = "extract_fields_v1"
+active_classification_function = "classify_doc_v1"
+active_model_profile = "default"
+max_index_chunk_tokens = 1200
+search_use_embeddings = true
+search_embedding_dimensions = 3072
+
+[seed]
+segmentation_prompt_blob_name = "segmentation/segment_v1.txt"
+classification_prompt_blob_name = "classification/classify_v1.txt"
+extraction_prompt_blob_name = "extraction/extract_v1.txt"
+photo_summary_prompt_blob_name = "extraction/photo_summary_v1.txt"
+segmentation_fn_blob_name = "segmentation/segment_docs_v1.json"
+extraction_fn_blob_name = "extraction/extract_fields_v1.json"
+classification_fn_blob_name = "classification/classify_doc_v1.json"
+extraction_schema_blob_name = "extraction/claim_core_v1.json"
+classification_schema_blob_name = "classification/doc_types_v1.json"

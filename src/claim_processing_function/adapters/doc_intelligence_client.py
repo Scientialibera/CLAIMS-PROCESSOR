@@ -31,6 +31,11 @@ class DocumentIntelligenceAdapter:
             return content.decode("utf-8", errors="ignore")
 
     def extract_pages(self, content: bytes, content_type: str, source_name: str) -> list[PagePayload]:
+        image_payload: str | None = None
+        normalized_content_type = content_type.lower()
+        if normalized_content_type in {"image/png", "image/jpeg", "image/jpg", "image/tiff"}:
+            image_payload = base64.b64encode(content).decode("utf-8")
+
         try:
             poller = self._client.begin_analyze_document('prebuilt-read', document=content)
             result = poller.result()
@@ -41,8 +46,8 @@ class DocumentIntelligenceAdapter:
                     PagePayload(
                         page_index=idx,
                         text=page_text,
-                        image_base64=None,
-                        image_mime_type=None,
+                        image_base64=image_payload if idx == 0 else None,
+                        image_mime_type=content_type if (image_payload and idx == 0) else None,
                         source_name=source_name,
                     )
                 )
@@ -50,10 +55,6 @@ class DocumentIntelligenceAdapter:
                 return pages
         except Exception:
             pass
-
-        image_payload: str | None = None
-        if content_type.lower() in {"image/png", "image/jpeg", "image/jpg", "image/tiff"}:
-            image_payload = base64.b64encode(content).decode("utf-8")
 
         return [
             PagePayload(

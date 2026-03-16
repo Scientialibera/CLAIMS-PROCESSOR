@@ -121,3 +121,19 @@ class AzureOpenAIAdapter:
             image_mime_type=image_mime_type,
             function_definition=function_definition,
         )
+
+    def embed(self, text: str) -> list[float]:
+        token = get_access_token(self.AOAI_SCOPE)
+        url = (
+            f"{self._settings.aoai_endpoint}/openai/deployments/{self._settings.aoai_embedding_deployment}/embeddings"
+            f"?api-version={self._settings.aoai_api_version}"
+        )
+        response = requests.post(
+            url,
+            json={"input": text},
+            headers={'Authorization': f'Bearer {token}'},
+            timeout=60,
+        )
+        response.raise_for_status()
+        data = response.json()["data"][0]["embedding"]
+        return [float(v) for v in data]
