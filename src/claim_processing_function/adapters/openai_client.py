@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import Sequence
 from typing import Any
 
 import requests
 
 from src.common.auth.credentials import get_access_token
+from src.common.logging.telemetry import timed_step
+
+_logger = logging.getLogger(__name__)
 
 
 class AzureOpenAIAdapter:
@@ -58,9 +62,22 @@ class AzureOpenAIAdapter:
             body["tools"] = [{"type": "function", "function": function_definition}]
             body["tool_choice"] = {"type": "function", "function": {"name": function_definition["name"]}}
 
-        response = requests.post(url, json=body, headers={'Authorization': f'Bearer {token}'}, timeout=60)
-        response.raise_for_status()
-        msg = response.json()['choices'][0]['message']
+        with timed_step() as t:
+            response = requests.post(url, json=body, headers={'Authorization': f'Bearer {token}'}, timeout=60)
+            response.raise_for_status()
+            resp_json = response.json()
+
+        usage = resp_json.get("usage", {})
+        _logger.info(json.dumps({
+            "event": "openai_api_call",
+            "deployment": deployment,
+            "elapsed_ms": t["elapsed_ms"],
+            "prompt_tokens": usage.get("prompt_tokens"),
+            "completion_tokens": usage.get("completion_tokens"),
+            "total_tokens": usage.get("total_tokens"),
+        }, default=str))
+
+        msg = resp_json['choices'][0]['message']
         content_json = msg.get('content')
         if not content_json and msg.get("tool_calls"):
             args = msg["tool_calls"][0]["function"]["arguments"]

@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import base64
+import json
+import logging
 from dataclasses import dataclass
 
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
 
 from src.common.auth.credentials import get_credential
+from src.common.logging.telemetry import timed_step
+
+_logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -24,11 +29,21 @@ class DocumentIntelligenceAdapter:
 
     def extract_text(self, content: bytes) -> str:
         try:
-            poller = self._client.begin_analyze_document(
-                'prebuilt-read',
-                AnalyzeDocumentRequest(bytes_source=content),
-            )
-            result = poller.result()
+            with timed_step() as t:
+                poller = self._client.begin_analyze_document(
+                    'prebuilt-read',
+                    AnalyzeDocumentRequest(bytes_source=content),
+                )
+                result = poller.result()
+
+            page_count = len(result.pages or [])
+            _logger.info(json.dumps({
+                "event": "doc_intelligence_call",
+                "elapsed_ms": t["elapsed_ms"],
+                "pages": page_count,
+                "input_bytes": len(content),
+            }, default=str))
+
             return '\n'.join(
                 line.content
                 for page in (result.pages or [])
@@ -44,13 +59,24 @@ class DocumentIntelligenceAdapter:
             image_payload = base64.b64encode(content).decode("utf-8")
 
         try:
-            poller = self._client.begin_analyze_document(
-                'prebuilt-read',
-                AnalyzeDocumentRequest(bytes_source=content),
-            )
-            result = poller.result()
+            with timed_step() as t:
+                poller = self._client.begin_analyze_document(
+                    'prebuilt-read',
+                    AnalyzeDocumentRequest(bytes_source=content),
+                )
+                result = poller.result()
+
+            raw_pages = result.pages or []
+            _logger.info(json.dumps({
+                "event": "doc_intelligence_call",
+                "elapsed_ms": t["elapsed_ms"],
+                "pages": len(raw_pages),
+                "input_bytes": len(content),
+                "source_name": source_name,
+            }, default=str))
+
             pages: list[PagePayload] = []
-            for idx, page in enumerate(result.pages or []):
+            for idx, page in enumerate(raw_pages):
                 page_text = '\n'.join(line.content for line in (page.lines or []))
                 pages.append(
                     PagePayload(
