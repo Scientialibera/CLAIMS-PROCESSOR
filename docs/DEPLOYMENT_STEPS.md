@@ -32,6 +32,12 @@ pwsh ./deploy/deploy-function.ps1
 - Service Bus namespace + queues
 - Cosmos account + SQL database + containers
 - Search service (optional create/reuse) + search index upsert
-- OpenAI and Doc Intelligence accounts (create/reuse)
+- OpenAI (standalone `OpenAI` kind) and Doc Intelligence (`AIServices` kind) accounts (create/reuse)
+- Custom subdomain on OpenAI and Doc Intelligence accounts (required for token auth)
 - OpenAI model deployments including embeddings (create-if-missing)
 - RBAC role assignments and Cosmos SQL data-plane role assignment
+
+## Critical Post-Deploy Checks
+1. Verify `DOCINTEL_ENDPOINT` uses the custom subdomain form (`https://<name>.cognitiveservices.azure.com/`), not the regional endpoint
+2. Verify `extensionBundle` is present in `host.json` — without it, Service Bus triggers silently fail
+3. Verify Function App MI has `Cognitive Services User` role on both OpenAI and Doc Intelligence accounts

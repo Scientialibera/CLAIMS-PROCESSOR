@@ -1,44 +1,45 @@
 [azure]
-subscription_id = ""
+subscription_id = ""                      # Leave empty to use current az login context
 location = "eastus2"
-resource_group_name = ""
+resource_group_name = ""                  # Empty = derived as rg-<prefix>
 
 [naming]
+# For each name: if given, check if exists → reuse; if not exists → create with that name; if empty → derive from prefix
 prefix = "berkleyclaims"
-function_app_name = ""
-storage_account_name = ""
-servicebus_namespace_name = ""
-cosmos_account_name = ""
-search_service_name = ""
-openai_account_name = ""
-docintel_account_name = ""
+function_app_name = ""                    # Empty = func-<prefix>
+storage_account_name = ""                 # Empty = st<prefix> (alphanumeric, max 24 chars)
+servicebus_namespace_name = ""            # Empty = sbns-<prefix>
+cosmos_account_name = ""                  # Empty = cosmos-<prefix>
+search_service_name = ""                  # Empty = srch-<prefix>
+openai_account_name = ""                  # Empty = aoai-<prefix>
+docintel_account_name = ""                # Empty = doci-<prefix>
 
 [queues]
-ready_queue_name = "q-claim-ready"
-processing_queue_name = "q-claim-process"
+ready_queue_name = "q-claim-ready"        # Intake queue (standard, no sessions) — new claim packages land here
+processing_queue_name = "q-claim-process" # Processing queue (session-enabled, session_id = claim_id) — ordered per-claim processing
 
 [storage]
-claims_container_name = "claims"
-prompts_container_name = "prompts"
-function_definitions_container_name = "function-definitions"
-schemas_container_name = "schemas"
+claims_container_name = "claims"                          # Source claim document packages (PDFs, images)
+prompts_container_name = "prompts"                        # Versioned LLM prompts (segment, classify, extract, photo summary)
+function_definitions_container_name = "function-definitions"  # OpenAI function-calling JSON definitions
+schemas_container_name = "schemas"                        # Extraction and classification schemas
 
 [cosmos]
-database_name = "claims"
-ledger_container_name = "processing_ledger"
-records_container_name = "processed_records"
+database_name = "claims"                  # Cosmos SQL API database
+ledger_container_name = "processing_ledger"   # Tracks per-claim processing state (partition key: /claim_id)
+records_container_name = "processed_records"  # Final extracted and classified records (partition key: /claim_id)
 
 [search]
-index_name = "claims-index"
-deploy_search_service = true
-sku = "basic"
+index_name = "claims-index"               # AI Search index for semantic retrieval of claim documents
+deploy_search_service = true              # true = create/reuse; false = must pre-exist
+sku = "basic"                             # AI Search tier (basic is 1 partition, 1 replica)
 
 [openai]
-deploy_openai_resources = true
-deployment_segment_name = "gpt-4-1-mini-segment"
-deployment_classify_name = "gpt-4-1-mini-classify"
-deployment_extract_name = "gpt-4-1-extract"
-deployment_embedding_name = "text-embedding-3-large"
+deploy_openai_resources = true            # true = create/reuse; false = account must pre-exist (name required in [naming])
+deployment_segment_name = "gpt-4-1-mini-segment"    # Deployment for document segmentation (fast, lightweight)
+deployment_classify_name = "gpt-4-1-mini-classify"  # Deployment for document classification (fast, lightweight)
+deployment_extract_name = "gpt-4-1-extract"         # Deployment for field extraction (higher capability)
+deployment_embedding_name = "text-embedding-3-large" # Deployment for vector embeddings (AI Search)
 model_segment_name = "gpt-4.1-mini"
 model_classify_name = "gpt-4.1-mini"
 model_extract_name = "gpt-4.1"
@@ -48,24 +49,24 @@ model_classify_version = "2025-04-14"
 model_extract_version = "2025-04-14"
 model_embedding_version = "1"
 deployment_sku_name = "GlobalStandard"
-capacity = 50
-api_version = "2024-06-01"
+capacity = 50                             # Tokens-per-minute in thousands
+api_version = "2024-06-01"               # Azure OpenAI REST API version
 
 [docintel]
-deploy_docintel_resources = true
-sku_name = "S0"
+deploy_docintel_resources = true          # true = create/reuse; false = account must pre-exist (name required in [naming])
+sku_name = "S0"                           # Deployed as AIServices kind; custom subdomain enforced for token auth
 
 [app_settings]
-pipeline_version = "v1"
-active_extraction_schema = "claim_core_v1"
-active_classification_schema = "doc_types_v1"
-active_segmentation_function = "segment_docs_v1"
-active_extraction_function = "extract_fields_v1"
-active_classification_function = "classify_doc_v1"
-active_model_profile = "default"
-max_index_chunk_tokens = 1200
-search_use_embeddings = true
-search_embedding_dimensions = 3072
+pipeline_version = "v1"                   # Version tag on processing records; allows multiple pipeline versions to coexist in Cosmos
+active_extraction_schema = "claim_core_v1"        # Selects JSON schema in src/schemas/extraction/ defining expected claim fields
+active_classification_schema = "doc_types_v1"     # Selects JSON schema in src/schemas/classification/ defining document type classes
+active_segmentation_function = "segment_docs_v1"  # Selects OpenAI function def in src/function_definitions/segmentation/
+active_extraction_function = "extract_fields_v1"  # Selects OpenAI function def in src/function_definitions/extraction/
+active_classification_function = "classify_doc_v1" # Selects OpenAI function def in src/function_definitions/classification/
+active_model_profile = "default"          # Selects YAML profile in src/model_profiles/ mapping roles to AOAI deployments
+max_index_chunk_tokens = 1200             # Max tokens per chunk for AI Search indexing; smaller = better precision, larger = more context
+search_use_embeddings = true              # true = embed documents with vector model for semantic search; false = keyword search only
+search_embedding_dimensions = 3072        # Must match embedding model output (text-embedding-3-large = 3072)
 
 [seed]
 segmentation_prompt_blob_name = "segmentation/segment_v1.txt"

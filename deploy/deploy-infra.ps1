@@ -202,20 +202,32 @@ if ($deploySearchService) {
 }
 
 if ($deployOpenAI) {
-    Write-Step "Ensuring Azure OpenAI account '$openAiAccount'."
+    Write-Step "Ensuring Azure OpenAI account '$openAiAccount' (standalone OpenAI kind)."
     $aoaiExists = az cognitiveservices account list --resource-group $resourceGroup --query "[?name=='$openAiAccount'] | length(@)" -o tsv
     if ($aoaiExists -eq "0") {
         az cognitiveservices account create --name $openAiAccount --resource-group $resourceGroup --kind OpenAI --sku S0 --location $location --custom-domain $openAiAccount | Out-Null
+    } else {
+        $existingDomain = az cognitiveservices account show --name $openAiAccount --resource-group $resourceGroup --query "properties.customSubDomainName" -o tsv
+        if ([string]::IsNullOrWhiteSpace($existingDomain)) {
+            Write-Step "Adding custom subdomain to existing OpenAI account (required for token auth)."
+            az cognitiveservices account update --name $openAiAccount --resource-group $resourceGroup --custom-domain $openAiAccount | Out-Null
+        }
     }
 } elseif ([string]::IsNullOrWhiteSpace($config.naming.openai_account_name)) {
     throw "naming.openai_account_name is required when openai.deploy_openai_resources=false."
 }
 
 if ($deployDocIntel) {
-    Write-Step "Ensuring Document Intelligence account '$docIntelAccount'."
+    Write-Step "Ensuring Document Intelligence account '$docIntelAccount' (AIServices kind)."
     $dociExists = az cognitiveservices account list --resource-group $resourceGroup --query "[?name=='$docIntelAccount'] | length(@)" -o tsv
     if ($dociExists -eq "0") {
-        az cognitiveservices account create --name $docIntelAccount --resource-group $resourceGroup --kind FormRecognizer --sku $config.docintel.sku_name --location $location --custom-domain $docIntelAccount | Out-Null
+        az cognitiveservices account create --name $docIntelAccount --resource-group $resourceGroup --kind AIServices --sku $config.docintel.sku_name --location $location --custom-domain $docIntelAccount | Out-Null
+    } else {
+        $existingDomain = az cognitiveservices account show --name $docIntelAccount --resource-group $resourceGroup --query "properties.customSubDomainName" -o tsv
+        if ([string]::IsNullOrWhiteSpace($existingDomain)) {
+            Write-Step "Adding custom subdomain to existing Doc Intelligence account (required for token auth)."
+            az cognitiveservices account update --name $docIntelAccount --resource-group $resourceGroup --custom-domain $docIntelAccount | Out-Null
+        }
     }
 } elseif ([string]::IsNullOrWhiteSpace($config.naming.docintel_account_name)) {
     throw "naming.docintel_account_name is required when docintel.deploy_docintel_resources=false."

@@ -3,7 +3,8 @@ from __future__ import annotations
 import base64
 from dataclasses import dataclass
 
-from azure.ai.formrecognizer import DocumentAnalysisClient
+from azure.ai.documentintelligence import DocumentIntelligenceClient
+from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
 
 from src.common.auth.credentials import get_credential
 
@@ -19,15 +20,21 @@ class PagePayload:
 
 class DocumentIntelligenceAdapter:
     def __init__(self, endpoint: str) -> None:
-        self._client = DocumentAnalysisClient(endpoint=endpoint, credential=get_credential())
+        self._client = DocumentIntelligenceClient(endpoint=endpoint, credential=get_credential())
 
     def extract_text(self, content: bytes) -> str:
         try:
-            poller = self._client.begin_analyze_document('prebuilt-read', document=content)
+            poller = self._client.begin_analyze_document(
+                'prebuilt-read',
+                AnalyzeDocumentRequest(bytes_source=content),
+            )
             result = poller.result()
-            return '\n'.join(line.content for page in result.pages for line in page.lines)
+            return '\n'.join(
+                line.content
+                for page in (result.pages or [])
+                for line in (page.lines or [])
+            )
         except Exception:
-            # Fallback for text-like files to keep pipeline resilient.
             return content.decode("utf-8", errors="ignore")
 
     def extract_pages(self, content: bytes, content_type: str, source_name: str) -> list[PagePayload]:
@@ -37,11 +44,14 @@ class DocumentIntelligenceAdapter:
             image_payload = base64.b64encode(content).decode("utf-8")
 
         try:
-            poller = self._client.begin_analyze_document('prebuilt-read', document=content)
+            poller = self._client.begin_analyze_document(
+                'prebuilt-read',
+                AnalyzeDocumentRequest(bytes_source=content),
+            )
             result = poller.result()
             pages: list[PagePayload] = []
-            for idx, page in enumerate(result.pages):
-                page_text = '\n'.join(line.content for line in page.lines)
+            for idx, page in enumerate(result.pages or []):
+                page_text = '\n'.join(line.content for line in (page.lines or []))
                 pages.append(
                     PagePayload(
                         page_index=idx,
