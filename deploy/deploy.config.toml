@@ -36,21 +36,16 @@ sku = "basic"                             # AI Search tier (basic is 1 partition
 
 [openai]
 deploy_openai_resources = true            # true = create/reuse; false = account must pre-exist (name required in [naming])
-deployment_segment_name = "gpt-4-1-mini-segment"    # Deployment for document segmentation (fast, lightweight)
-deployment_classify_name = "gpt-4-1-mini-classify"  # Deployment for document classification (fast, lightweight)
-deployment_extract_name = "gpt-4-1-extract"         # Deployment for field extraction (higher capability)
-deployment_embedding_name = "text-embedding-3-large" # Deployment for vector embeddings (AI Search)
-model_segment_name = "gpt-4.1-mini"
-model_classify_name = "gpt-4.1-mini"
-model_extract_name = "gpt-4.1"
+deployment_name = "gpt-5-mini"            # Single AOAI chat deployment for all roles (segment, classify, extract)
+model_name = "gpt-5-mini"
+model_version = "2025-08-07"
+deployment_embedding_name = "text-embedding-3-large" # Separate deployment for vector embeddings (different model type)
 model_embedding_name = "text-embedding-3-large"
-model_segment_version = "2025-04-14"
-model_classify_version = "2025-04-14"
-model_extract_version = "2025-04-14"
 model_embedding_version = "1"
 deployment_sku_name = "GlobalStandard"
 capacity = 50                             # Tokens-per-minute in thousands
-api_version = "2024-06-01"               # Azure OpenAI REST API version
+api_version = "2025-01-01-preview"        # Azure OpenAI REST API version
+max_completion_tokens = ""                # If set, sent as max_completion_tokens in API calls; if empty, parameter is omitted entirely (model uses its default)
 
 [docintel]
 deploy_docintel_resources = true          # true = create/reuse; false = account must pre-exist (name required in [naming])

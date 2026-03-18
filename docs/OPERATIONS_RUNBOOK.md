@@ -58,7 +58,7 @@ The processing queue uses sessions (`session_id = claim_id`) to ensure ordered p
 | `ACTIVE_SEGMENTATION_FUNCTION` | `segment_docs_v1` | Selects the OpenAI function definition under `src/function_definitions/segmentation/` used for document segmentation. |
 | `ACTIVE_EXTRACTION_FUNCTION` | `extract_fields_v1` | Selects the OpenAI function definition under `src/function_definitions/extraction/` used for field extraction. |
 | `ACTIVE_CLASSIFICATION_FUNCTION` | `classify_doc_v1` | Selects the OpenAI function definition under `src/function_definitions/classification/` used for document classification. |
-| `ACTIVE_MODEL_PROFILE` | `default` | Selects the YAML model profile under `src/model_profiles/` mapping logical roles (segment, classify, extract) to AOAI deployment names. |
+| `ACTIVE_MODEL_PROFILE` | `default` | Selects the YAML model profile under `src/model_profiles/` mapping logical roles (segment, classify, extract) to a single AOAI deployment name (`AOAI_DEPLOYMENT`). |
 | `MAX_INDEX_CHUNK_TOKENS` | `1200` | Maximum token count per chunk when splitting documents for AI Search indexing. Smaller chunks improve retrieval precision; larger chunks preserve context. |
 | `SEARCH_USE_EMBEDDINGS` | `true` | When `true`, documents are embedded using the configured embedding model and stored as vectors in AI Search for semantic retrieval. When `false`, only keyword search is available. |
 | `SEARCH_EMBEDDING_DIMENSIONS` | `3072` | Dimensionality of the embedding vectors. Must match the model's output dimensions (e.g. `text-embedding-3-large` outputs 3072). |

@@ -27,7 +27,7 @@ What this does (idempotent):
 - AI Search service (optional create/reuse)
 - Function App on Flex Consumption + system-assigned managed identity
 - OpenAI + Document Intelligence account create/reuse
-- OpenAI deployments: segment/classify/extract/embedding (create-if-missing)
+- OpenAI deployments: single chat model (`gpt-5-mini`) + embedding (create-if-missing)
 - RBAC and Cosmos SQL data-plane role assignments
 - Function app settings for runtime
 

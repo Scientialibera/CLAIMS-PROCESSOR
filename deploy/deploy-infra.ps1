@@ -272,9 +272,7 @@ if (-not [string]::IsNullOrWhiteSpace($openAiEndpoint)) {
     Ensure-RoleAssignment -PrincipalId $functionPrincipalId -Scope $openAiScope -Role "Cognitive Services User"
 
     foreach ($deployment in @(
-      @{ name=$config.openai.deployment_segment_name; model=$config.openai.model_segment_name; version=$config.openai.model_segment_version },
-      @{ name=$config.openai.deployment_classify_name; model=$config.openai.model_classify_name; version=$config.openai.model_classify_version },
-      @{ name=$config.openai.deployment_extract_name; model=$config.openai.model_extract_name; version=$config.openai.model_extract_version },
+      @{ name=$config.openai.deployment_name; model=$config.openai.model_name; version=$config.openai.model_version },
       @{ name=$config.openai.deployment_embedding_name; model=$config.openai.model_embedding_name; version=$config.openai.model_embedding_version }
     )) {
       $exists = az cognitiveservices account deployment list --name $openAiAccount --resource-group $resourceGroup --query "[?name=='$($deployment.name)'] | length(@)" -o tsv
@@ -318,9 +316,8 @@ $appSettings = @(
   "DOCINTEL_ENDPOINT=$docIntelEndpoint",
   "AOAI_ENDPOINT=$openAiEndpoint",
   "AOAI_API_VERSION=$($config.openai.api_version)",
-  "AOAI_DEPLOYMENT_SEGMENT=$($config.openai.deployment_segment_name)",
-  "AOAI_DEPLOYMENT_CLASSIFY=$($config.openai.deployment_classify_name)",
-  "AOAI_DEPLOYMENT_EXTRACT=$($config.openai.deployment_extract_name)",
+  "AOAI_MAX_COMPLETION_TOKENS=$($config.openai.max_completion_tokens)",
+  "AOAI_DEPLOYMENT=$($config.openai.deployment_name)",
   "AOAI_DEPLOYMENT_EMBEDDING=$($config.openai.deployment_embedding_name)",
   "SEARCH_ENDPOINT=$searchEndpoint",
   "SEARCH_INDEX=$searchIndex",

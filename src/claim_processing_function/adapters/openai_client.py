@@ -43,15 +43,17 @@ class AzureOpenAIAdapter:
         else:
             user_content = content
 
-        body = {
-            'temperature': self._settings.profile.temperature,
-            'max_tokens': self._settings.profile.max_tokens,
+        body: dict[str, Any] = {
             'messages': [
                 {'role': 'system', 'content': prompt},
                 {'role': 'user', 'content': user_content},
             ],
             'response_format': {'type': 'json_object'},
         }
+        if self._settings.profile.temperature is not None:
+            body['temperature'] = self._settings.profile.temperature
+        if self._settings.profile.max_completion_tokens:
+            body['max_completion_tokens'] = self._settings.profile.max_completion_tokens
         if function_definition:
             body["tools"] = [{"type": "function", "function": function_definition}]
             body["tool_choice"] = {"type": "function", "function": {"name": function_definition["name"]}}

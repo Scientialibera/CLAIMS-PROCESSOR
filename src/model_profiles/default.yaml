@@ -1,5 +1,3 @@
-segment_model: ${AOAI_DEPLOYMENT_SEGMENT}
-classify_model: ${AOAI_DEPLOYMENT_CLASSIFY}
-extract_model: ${AOAI_DEPLOYMENT_EXTRACT}
-temperature: 0.0
-max_tokens: 2500
+segment_model: ${AOAI_DEPLOYMENT}
+classify_model: ${AOAI_DEPLOYMENT}
+extract_model: ${AOAI_DEPLOYMENT}

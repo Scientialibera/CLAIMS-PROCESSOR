@@ -44,9 +44,7 @@ Complete inventory of every service, resource, identity, and connection required
 
 | Deployment Name | Model | Purpose |
 |---|---|---|
-| `gpt-4-1-mini-segment` | gpt-4.1-mini | Document segmentation |
-| `gpt-4-1-mini-classify` | gpt-4.1-mini | Document classification |
-| `gpt-4-1-extract` | gpt-4.1 | Field extraction |
+| `gpt-5-mini` | gpt-5-mini | Single chat deployment for all roles (segment, classify, extract) |
 | `text-embedding-3-large` | text-embedding-3-large | Embedding for AI Search |
 
 ---

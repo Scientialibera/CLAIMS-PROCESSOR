@@ -15,8 +15,8 @@ class ModelProfile:
     segment_model: str
     classify_model: str
     extract_model: str
-    temperature: float
-    max_tokens: int
+    temperature: float | None
+    max_completion_tokens: int | None
 
 
 @dataclass(frozen=True)
@@ -73,12 +73,13 @@ def _resolve(value: str) -> str:
 
 def _load_profile(name: str) -> ModelProfile:
     payload = yaml.safe_load(_read_text(_repo_root() / 'src' / 'model_profiles' / f'{name}.yaml'))
+    raw_tokens = os.getenv('AOAI_MAX_COMPLETION_TOKENS', '')
     return ModelProfile(
         segment_model=_resolve(payload['segment_model']),
         classify_model=_resolve(payload['classify_model']),
         extract_model=_resolve(payload['extract_model']),
-        temperature=float(payload.get('temperature', 0.0)),
-        max_tokens=int(payload.get('max_tokens', 2000)),
+        temperature=float(payload['temperature']) if 'temperature' in payload else None,
+        max_completion_tokens=int(raw_tokens) if raw_tokens else None,
     )
 
 
@@ -107,7 +108,7 @@ def get_settings() -> AppSettings:
         pipeline_version=os.getenv('PIPELINE_VERSION', 'v1'),
         docintel_endpoint=os.getenv('DOCINTEL_ENDPOINT', ''),
         aoai_endpoint=os.getenv('AOAI_ENDPOINT', ''),
-        aoai_api_version=os.getenv('AOAI_API_VERSION', '2024-06-01'),
+        aoai_api_version=os.getenv('AOAI_API_VERSION', '2025-01-01-preview'),
         aoai_embedding_deployment=os.getenv('AOAI_DEPLOYMENT_EMBEDDING', 'text-embedding-3-large'),
         profile=_load_profile(profile_name),
         extraction_schema=_load_json(_repo_root() / 'src' / 'schemas' / 'extraction' / f'{extraction_name}.json'),

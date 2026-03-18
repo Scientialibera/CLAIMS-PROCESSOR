@@ -34,7 +34,7 @@ pwsh ./deploy/deploy-function.ps1
 - Search service (optional create/reuse) + search index upsert
 - OpenAI (standalone `OpenAI` kind) and Doc Intelligence (`AIServices` kind) accounts (create/reuse)
 - Custom subdomain on OpenAI and Doc Intelligence accounts (required for token auth)
-- OpenAI model deployments including embeddings (create-if-missing)
+- OpenAI model deployments: single `gpt-5-mini` chat deployment + `text-embedding-3-large` embedding (create-if-missing)
 - RBAC role assignments and Cosmos SQL data-plane role assignment
 
 ## Critical Post-Deploy Checks

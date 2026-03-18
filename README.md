@@ -246,5 +246,5 @@ Switch active versions with env vars in `local.settings.json`.
 ## Deployment Notes
 - All services are deployed idempotently, including Cosmos account/database/containers and AI Search service/index.
 - If `search.deploy_search_service=false`, the script reuses an existing AI Search service name from config and still idempotently ensures the index.
-- OpenAI model deployments (segmentation/classification/extraction/embedding) are created only if missing.
+- OpenAI model deployments (single `gpt-5-mini` chat deployment + `text-embedding-3-large` embedding) are created only if missing.
 - Prompt/function-definition/schema assets are seeded during `deploy-function.ps1` (not infra), matching your push-time seeding pattern.
