@@ -43,7 +43,7 @@ deployment_embedding_name = "text-embedding-3-large" # Separate deployment for v
 model_embedding_name = "text-embedding-3-large"
 model_embedding_version = "1"
 deployment_sku_name = "GlobalStandard"
-capacity = 50                             # Tokens-per-minute in thousands
+capacity = 500                            # Tokens-per-minute in thousands
 api_version = "2025-01-01-preview"        # Azure OpenAI REST API version
 max_completion_tokens = ""                # If set, sent as max_completion_tokens in API calls; if empty, parameter is omitted entirely (model uses its default)
 
