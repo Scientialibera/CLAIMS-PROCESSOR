@@ -242,7 +242,7 @@ if ($funcExists -eq "0") {
       --storage-account $storageAccount `
       --flexconsumption-location $location `
       --runtime python `
-      --runtime-version 3.11 `
+      --runtime-version 3.13 `
       --functions-version 4 | Out-Null
 }
 

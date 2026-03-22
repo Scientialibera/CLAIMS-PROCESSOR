@@ -54,10 +54,13 @@ class AzureOpenAIAdapter:
             ],
             'response_format': {'type': 'json_object'},
         }
-        if self._settings.profile.temperature is not None:
-            body['temperature'] = self._settings.profile.temperature
-        if self._settings.profile.max_completion_tokens:
-            body['max_completion_tokens'] = self._settings.profile.max_completion_tokens
+        if self._settings.profile.reasoning_model:
+            body['reasoning_effort'] = self._settings.profile.reasoning_effort
+        else:
+            if self._settings.profile.temperature is not None:
+                body['temperature'] = self._settings.profile.temperature
+            if self._settings.profile.max_completion_tokens:
+                body['max_completion_tokens'] = self._settings.profile.max_completion_tokens
         if function_definition:
             body["tools"] = [{"type": "function", "function": function_definition}]
             body["tool_choice"] = {"type": "function", "function": {"name": function_definition["name"]}}

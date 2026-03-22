@@ -1,3 +1,5 @@
 segment_model: ${AOAI_DEPLOYMENT}
 classify_model: ${AOAI_DEPLOYMENT}
 extract_model: ${AOAI_DEPLOYMENT}
+reasoning_model: true
+reasoning_effort: medium

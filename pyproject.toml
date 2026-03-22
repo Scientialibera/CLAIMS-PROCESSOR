@@ -7,7 +7,7 @@ name = "claims-processor"
 version = "0.1.0"
 description = "General claims document intelligence pipeline"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dependencies = [
   "azure-functions>=1.20.0",
   "azure-identity>=1.17.0",
